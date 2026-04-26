@@ -74,3 +74,4 @@ This is particularly important as dimensionality increases, where naive explorat
 
 ### Reflection  
 The approach combines probabilistic modelling with simple heuristics (e.g. central baseline). As dimensionality grows, structured methods like SVMs and neural networks become increasingly relevant, reinforcing key ideas from real-world optimisation problems where data is limited and costly to obtain.
+
