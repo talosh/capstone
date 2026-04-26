@@ -75,3 +75,48 @@ This is particularly important as dimensionality increases, where naive explorat
 ### Reflection  
 The approach combines probabilistic modelling with simple heuristics (e.g. central baseline). As dimensionality grows, structured methods like SVMs and neural networks become increasingly relevant, reinforcing key ideas from real-world optimisation problems where data is limited and costly to obtain.
 
+## Section 5: Current Repository Structure
+
+capstone/
+├── data/              # Stored query inputs and returned outputs
+├── notebooks/         # Function-specific experiments and modelling notebooks
+├── queries/           # Submitted query points by round
+├── results/           # Best values, rankings, and summaries
+├── reports/           # Reflection writeups and module submissions
+├── README.md
+
+This structure improves organisation, reproducibility, and makes the workflow easier to follow.
+
+---
+
+## Section 6: Updated Modelling Strategy
+
+The project now uses a hybrid surrogate modelling approach:
+
+- **Gaussian Processes** for prediction + uncertainty estimates  
+- **SVM classifiers** for separating promising vs poor-performing regions  
+- **PyTorch MLP neural networks** for nonlinear approximation and gradient-based guidance  
+
+This allows both global exploration and local refinement.
+
+---
+
+## Section 7: Current Lessons Learned
+
+After multiple submission rounds:
+
+- Simpler models often work well when data is limited  
+- Neural networks are most useful when nonlinear structure appears  
+- Classification of “good vs bad” regions can be easier than exact regression  
+- Balancing exploration vs exploitation remains the key challenge
+
+---
+
+## Section 8: Next Steps
+
+- Continue comparing GP, SVM, and neural-network surrogates  
+- Use gradients and uncertainty jointly when selecting queries  
+- Improve automation of query generation across all 8 functions  
+- Track performance trends across rounds
+
+
