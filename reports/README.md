@@ -1,0 +1,1 @@
+Written reflections, module submissions, and any summaries produced at the end of a challenge round. Static documents, not generated outputs.
