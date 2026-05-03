@@ -75,19 +75,49 @@ This is particularly important as dimensionality increases, where naive explorat
 ### Reflection  
 The approach combines probabilistic modelling with simple heuristics (e.g. central baseline). As dimensionality grows, structured methods like SVMs and neural networks become increasingly relevant, reinforcing key ideas from real-world optimisation problems where data is limited and costly to obtain.
 
-## Section 5: Current Repository Structure
+## Project Structure
 
+```
 capstone/
-├── data/              # Stored query inputs and returned outputs
-├── notebooks/         # Function-specific experiments and modelling notebooks
-├── queries/           # Submitted query points by round
-├── results/           # Best values, rankings, and summaries
-├── reports/           # Reflection writeups and module submissions
-├── README.md
+├── data/
+│   ├── function_01.json
+│   ├── function_02.json
+│   └── ...
+├── src/
+│   ├── loader.py
+│   ├── surrogates/
+│   │   ├── gp.py
+│   │   ├── svr.py
+│   │   └── mlp.py
+│   └── acquisition.py
+├── notebooks/
+│   └── analysis.ipynb
+├── reports/
+└── README.md
+```
 
-This structure improves organisation, reproducibility, and makes the workflow easier to follow.
+### `data/`
 
----
+One JSON file per black-box function, named `function_01.json` through `function_08.json`. Each file is the single source of truth for that function — it holds the initial seed observations provided at the start of the challenge alongside every query point submitted and result received since. Initial seed points are marked `"source": "initial"` to preserve the raw/derived distinction without requiring a separate folder. Query results awaiting a response are recorded immediately with `"y": null` and filled in once the result arrives, reflecting the time-delayed nature of the evaluation process. The files are plain JSON, directly editable in any text editor.
+
+### `src/`
+
+Reusable Python modules containing all modelling logic. Nothing here is tied to a specific function or experiment run — these are callable building blocks:
+
+- `loader.py` — reads a function JSON and returns arrays ready for modelling
+- `surrogates/` — one module per surrogate type (GP, SVR, MLP), each exposing a consistent `fit` / `predict` interface
+- `acquisition.py` — acquisition functions (Expected Improvement, UCB) shared across surrogates
+
+Keeping logic here rather than inside notebooks means it can be iterated on independently, imported cleanly, and reused across functions without copy-pasting.
+
+### `notebooks/analysis.ipynb`
+
+A single universal notebook that acts as the experiment runner and report. A `CONFIG` dict at the top of the notebook controls which functions to load, which surrogate methods to apply, and what hyperparameters to use for each. Changing the config and re-running the notebook produces a fresh comparison across all selected functions and methods. The notebook itself is stable — only the config and `src/` evolve as the project develops.
+
+### `reports/`
+
+Written reflections, module submissions, and any summaries produced at the end of a challenge round. Static documents, not generated outputs.
+
 
 ## Section 6: Updated Modelling Strategy
 
