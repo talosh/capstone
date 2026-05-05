@@ -60,6 +60,16 @@ def get_observations(
     return X, y
 
 
+def _x_exists(obs: list[dict], x: list[float]) -> bool:
+    """Return True if x already appears in observations (exact float match)."""
+    return any(o["x"] == list(x) for o in obs)
+
+
+def _round_has_entries(obs: list[dict], round: int) -> list[dict]:
+    """Return all existing query observations for a given round."""
+    return [o for o in obs if o["source"] == "query" and o["round"] == round]
+
+
 def add_observation(
     function_id: int,
     round: int,
@@ -71,6 +81,16 @@ def add_observation(
     Append a new observation to a function's JSON file.
 
     Set y=None to record a pending submission (result not yet returned).
+
+    Raises
+    ------
+    ValueError
+        If x dimension does not match the function's input_dim.
+    ValueError
+        If x already exists anywhere in the observations for this function.
+    ValueError
+        If round already has entries but the new point's y type is inconsistent
+        with the existing entries (mixing pending and completed in the same round).
 
     Parameters
     ----------
@@ -89,16 +109,40 @@ def add_observation(
     with open(path) as f:
         data = json.load(f)
 
+    obs = data["observations"]
+    x = list(x)
+
+    # check 1: input dimension
     expected_dim = data["input_dim"]
     if len(x) != expected_dim:
         raise ValueError(
-            f"function {function_id} expects input_dim={expected_dim}, got {len(x)}"
+            f"function {function_id}: expected input_dim={expected_dim}, got {len(x)}"
         )
+
+    # check 2: duplicate x — same point must never appear twice
+    if _x_exists(obs, x):
+        raise ValueError(
+            f"function {function_id}: x={x} already exists in observations. "
+            f"Each query point must be unique."
+        )
+
+    # check 3: round consistency — if round already has entries, new point's
+    # pending/complete status must match (don't mix y=None and y=value in same round)
+    existing_in_round = _round_has_entries(obs, round)
+    if existing_in_round:
+        existing_pending = any(o["y"] is None for o in existing_in_round)
+        new_pending = y is None
+        if existing_pending != new_pending:
+            state = "pending (y=None)" if existing_pending else "completed (y=value)"
+            raise ValueError(
+                f"function {function_id}: round {round} already has {state} entries. "
+                f"All points in a round must be either all pending or all completed."
+            )
 
     data["observations"].append({
         "round": round,
         "source": "query",
-        "x": list(x),
+        "x": x,
         "y": y,
         "note": note,
     })
