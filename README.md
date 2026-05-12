@@ -89,12 +89,19 @@ capstone/
 │   │   ├── gp.py
 │   │   ├── svr.py
 │   │   └── mlp.py
+│   │   └── xgd.py
 │   └── acquisition.py
 ├── notebooks/
 │   └── analysis.ipynb
 ├── reports/
+└── DATASHEET.md
+└── MODEL_CARD.md
 └── README.md
+
 ```
+
+- [DATASHEET.md](DATASHEET.md) — dataset documentation including composition, collection process and known gaps
+- [MODEL_CARD.md](MODEL_CARD.md) — model documentation including architecture, performance and limitations
 
 ### `data/`
 
